@@ -1,0 +1,3 @@
+My name is Golnaz and I am an experienced mobile developer.
+I am currently learning Python and Artificial Intelligence to transition into an AI Engineer role.
+My current project is building a RAG (Retrieval-Augmented Generation) system using Google's Gemini models.
