@@ -4,4 +4,5 @@ __pycache__/
 .env
 *.pdf
 chroma_db/
+qdrant_storage/
 .DS_Store
