@@ -1,24 +1,59 @@
 # AI RAG Backend
 
-A Python FastAPI backend that answers questions about PDF documents using Retrieval-Augmented Generation (RAG) powered by Google Gemini.
+A Python FastAPI backend that answers questions about uploaded PDF documents using Retrieval-Augmented Generation (RAG) powered by Google Gemini and Qdrant vector search.
 
-## How it works
+Used by [AiRagApp](https://github.com/golnaaz/AiRagApp) — a Kotlin Multiplatform client for Android, iOS, Desktop, and Web.
 
-On startup the server loads a PDF, splits it into chunks, converts them into embeddings using `gemini-embedding-2-preview`, and stores them in a Chroma vector database. When a question arrives it retrieves the most relevant chunks and sends them as context to Gemini to generate an answer.
+---
+
+## How It Works
+
+1. **Upload** — a PDF is split into chunks, embedded with `gemini-embedding-2-preview`, and stored in a local Qdrant collection
+2. **Query** — the question is embedded, the top-k most relevant chunks are retrieved
+3. **Answer** — chunks are injected as context into a Gemini prompt; the answer streams back token-by-token over SSE
+
+---
+
+## API
+
+### `POST /upload`
+
+Upload a PDF document.
 
 ```
-POST /ask
-Body:     { "question": "your question here" }
-Response: { "status": "success", "answer": "...", "sources": [1, 2, 3] }
+Content-Type: multipart/form-data
+Field: file  (PDF binary)
 ```
 
-## Tech Stack
+Response:
+```json
+{
+  "doc_id": "abc123",
+  "filename": "document.pdf",
+  "pages_count": 4,
+  "chunks_count": 18,
+  "status": "indexed"
+}
+```
 
-- [FastAPI](https://fastapi.tiangolo.com/) — REST API server
-- [Google Gemini](https://ai.google.dev/) — LLM for generation + embeddings
-- [LangChain](https://www.langchain.com/) — document loading and text splitting
-- [Chroma](https://www.trychroma.com/) — local vector database
-- Python 3.11+
+### `POST /ask-stream`
+
+Ask a question about an uploaded document. Streams the answer as Server-Sent Events.
+
+```json
+{ "question": "What is the main topic?", "doc_id": "abc123" }
+```
+
+SSE event types:
+```
+data: {"type": "token",  "content": "The main ..."}
+data: {"type": "done",   "content": null}
+data: {"type": "error",  "message": "..."}
+```
+
+API docs available at `http://localhost:8000/docs` when running locally.
+
+---
 
 ## Setup
 
@@ -27,21 +62,32 @@ git clone https://github.com/golnaaz/ai-rag-backend.git
 cd ai-rag-backend
 
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate       # Windows: venv\Scripts\activate
 
-pip install fastapi uvicorn google-genai langchain langchain-community \
-            langchain-google-genai langchain-chroma chromadb pypdf python-dotenv
+pip install -r requirements.txt
 
 cp .env.example .env
-# Edit .env and add your GOOGLE_API_KEY
+# Edit .env and set:  GOOGLE_API_KEY=your_key_here
+```
 
-cp /path/to/your/file.pdf sample.pdf
+Start the server:
 
+```bash
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-API docs available at `http://localhost:8000/docs`.
+---
 
-## Android Client
+## Tech Stack
 
-This backend is consumed by [AiRagApp](https://github.com/golnaaz/AiRagApp) — a Kotlin Multiplatform app built with Compose Multiplatform.
+- [FastAPI](https://fastapi.tiangolo.com/) — REST API + SSE streaming
+- [Google Gemini](https://ai.google.dev/) — LLM generation + text embeddings
+- [Qdrant](https://qdrant.tech/) — local vector database (in-memory)
+- [LangChain](https://www.langchain.com/) — PDF loading and text splitting
+- Python 3.11+
+
+---
+
+## Security
+
+The `GOOGLE_API_KEY` is loaded from a `.env` file (never hardcoded). The `.env` file is git-ignored.
