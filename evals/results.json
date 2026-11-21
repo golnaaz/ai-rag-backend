@@ -1,0 +1,72 @@
+[
+  {
+    "id": "q1",
+    "question": "What is the main topic or purpose of this document?",
+    "retrieved_pages": [
+      1
+    ],
+    "expected_pages": [
+      1
+    ],
+    "page_recall": 1.0,
+    "faithfulness": 1.0,
+    "relevance": 1.0,
+    "reasoning": "The model accurately identifies the document as a resume/CV for an Android Engineer based directly on the provided context, mentioning specific companies and responsibilities found in the text.",
+    "answer": "Based on the provided context, the document is a professional resume or CV (specifically detailing work experience). Its main purpose is to showcase the professional background, technical skills, and achievements of an **Android Engineer**, highlighting roles at companies such as GLS/NXT and Gorillas in Berlin, Germany."
+  },
+  {
+    "id": "q2",
+    "question": "What specific metrics, rules, or key details are mentioned?",
+    "retrieved_pages": [
+      1
+    ],
+    "expected_pages": [
+      1,
+      2
+    ],
+    "page_recall": 0.5,
+    "faithfulness": 1.0,
+    "relevance": 1.0,
+    "reasoning": "The model's response comprehensively and accurately extracts the metrics, roles, technologies, and key details directly from the provided text without any hallucinations.",
+    "answer": "Based on the provided context, the specific metrics and key details mentioned include:\n\n### **Specific Metrics**\n* **85% code coverage:** Attained by developing Unit, UI, and End-to-End test suites.\n* **99.99% crash-free rate:** Maintained on Firebase Crashlytics to improve app reliability.\n* **Date Range:** 04/2024 – 04/2025.\n\n### **Architecture & Technologies**\n* **Framework:** Compose within a multi-module Clean Architecture framework.\n* **Cross-Platform:** Kotlin Multiplatform (KMP) shared code modules used to unify business logic across different platforms.\n* **SDKs & Connectivity:** Custom Software Development Kits (SDKs) engineered with Bluetooth connectivity for hardware peripherals and efficient network request handling.\n* **Tools:** Firebase Crashlytics and robust log monitoring tools.\n\n### **Roles & Companies**\n* **Android Engineer** at **GLS/ NXT** (Berlin, Germany).\n* **Android Engineer** at **Gorillas** (Berlin, Germany).\n\n### **Key Performance & Project Details**\n* Architected and developed a driver delivery application from its foundational stages.\n* Accelerated app start times and optimized rendering performance across a wide spectrum of Android devices.\n* Implemented UI and Unit tests for critical user journeys."
+  },
+  {
+    "id": "q3",
+    "question": "What is the author's personal phone number?",
+    "retrieved_pages": [
+      1
+    ],
+    "expected_pages": [],
+    "page_recall": 1.0,
+    "faithfulness": 1.0,
+    "relevance": 1.0,
+    "reasoning": "The model directly answers the question with the exact phone number present in the reference context, making it fully faithful and completely relevant.",
+    "answer": "Based on the provided document, the author's phone number is **+4915224632403**."
+  },
+  {
+    "id": "q4",
+    "question": "What did the CEO say in the board meeting last Tuesday?",
+    "retrieved_pages": [
+      1
+    ],
+    "expected_pages": [],
+    "page_recall": 1.0,
+    "faithfulness": 1.0,
+    "relevance": 1.0,
+    "reasoning": "The model accurately identified that the provided context does not contain any information regarding the CEO or a board meeting, avoiding hallucination and appropriately answering the prompt.",
+    "answer": "Based on the provided context, the document does not contain information about what the CEO said in a board meeting."
+  },
+  {
+    "id": "q5",
+    "question": "What is the stock price of the company mentioned in this document?",
+    "retrieved_pages": [
+      1
+    ],
+    "expected_pages": [],
+    "page_recall": 1.0,
+    "faithfulness": 1.0,
+    "relevance": 1.0,
+    "reasoning": "The model correctly identifies that the context does not contain any information about stock prices, which matches the reference answer.",
+    "answer": "Based on the provided document, there is no mention of the stock price for any company. The document does not contain enough information to answer this question."
+  }
+]

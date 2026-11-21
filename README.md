@@ -55,6 +55,16 @@ API docs available at `http://localhost:8000/docs` when running locally.
 
 ---
 
+## Project Structure
+
+```
+backend/        → FastAPI app (main.py, rag_service.py, schemas.py)
+evals/          → Evaluation pipeline
+  run_eval.py       LLM-as-a-judge evaluation script
+  eval_dataset.json Test questions with expected answers and source pages
+  results.json      Last evaluation run output (auto-generated)
+```
+
 ## Setup
 
 ```bash
@@ -66,13 +76,14 @@ source venv/bin/activate       # Windows: venv\Scripts\activate
 
 pip install -r requirements.txt
 
-cp .env.example .env
-# Edit .env and set:  GOOGLE_API_KEY=your_key_here
+cp .env.example backend/.env
+# Edit backend/.env and set:  GOOGLE_API_KEY=your_key_here
 ```
 
 Start the server:
 
 ```bash
+cd backend
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
@@ -98,16 +109,33 @@ The system is designed with faithfulness as the primary goal:
 - Retrieved chunks include page-number metadata so answers can be traced back to their source pages (returned in the `done` SSE event as `sources`).
 - Retrieval is scoped per `doc_id` so chunks from unrelated documents never contaminate the context window.
 
-### Planned Evaluation (Work in Progress)
+### Evaluation Pipeline (`evals/`)
 
-A formal evaluation pipeline using [RAGAS](https://docs.ragas.io/) is planned. RAGAS measures:
+A custom LLM-as-a-judge evaluation pipeline lives in `evals/run_eval.py`. It measures answer quality automatically without manual review.
 
-| Metric | What it measures |
-|--------|-----------------|
-| **Faithfulness** | Fraction of answer claims that are entailed by the retrieved context (target: > 0.9) |
-| **Answer Relevancy** | How directly the answer addresses the question |
-| **Context Precision** | Whether the top-ranked chunks are actually relevant |
-| **Context Recall** | Whether all information needed to answer is present in the retrieved chunks |
+**How it works:**
+
+1. Loads test questions from `evals/eval_dataset.json` — each with a question, `doc_id`, expected answer, and expected source pages
+2. Runs the full RAG pipeline (same `build_rag_prompt` as production — no mocking)
+3. Sends the question, retrieved context, expected answer, and actual answer to a **second Gemini call** acting as a judge
+4. The judge returns structured scores via Pydantic + `response_schema` (guaranteed valid JSON)
+5. Page recall is computed independently as simple set intersection
+
+**Metrics:**
+
+| Metric | What it measures | How computed |
+|--------|-----------------|--------------|
+| **Faithfulness** | Did the answer stick to the context, or hallucinate? | LLM judge (0.0 – 1.0) |
+| **Relevance** | Did the answer actually address the question? | LLM judge (0.0 – 1.0) |
+| **Page Recall** | Did the retriever find the right source pages? | Set math: retrieved ∩ expected / expected |
+
+**Run it:**
+
+```bash
+cd evals
+python run_eval.py
+# Prints per-question scores and saves full results to evals/results.json
+```
 
 ---
 

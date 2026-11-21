@@ -1,0 +1,16 @@
+[
+  {
+    "id": "q1",
+    "question": "What is the main topic or purpose of this document?",
+    "doc_id": "default-sample",
+    "expected_answer": "Summarize the core purpose stated in the document.",
+    "expected_pages": [1]
+  },
+  {
+    "id": "q2",
+    "question": "What specific metrics, rules, or key details are mentioned?",
+    "doc_id": "default-sample",
+    "expected_answer": "State only the key facts or metrics explicitly present in the text.",
+    "expected_pages": [1, 2]
+  }
+]
